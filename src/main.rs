@@ -1,7 +1,7 @@
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
 
-const INPUT: &str = "abcccccccccccccccccccccccccccccccccccccccccccccccccccaaaaacccccccccccccaaaaaaaccccccccccccccccaaaaaaccccccccccccccccccccccccccaaaaacccaaaccccccccccccccccccccccccccccccaaaaa
+const INPUT: &str ="abcccccccccccccccccccccccccccccccccccccccccccccccccccaaaaacccccccccccccaaaaaaaccccccccccccccccaaaaaaccccccccccccccccccccccccccaaaaacccaaaccccccccccccccccccccccccccccccaaaaa
 abcccccccccaaaccccccccccccaaaccccccccccccccccccccccccaaaaaacccccccccccccaaaaaaaaaaaccaaaaccccaaaaaaacccccccccccccccccccccccccccaaaaaacaaaaccccccccccccccccccccccccccccccaaaa
 abcccccccccaaaaaacccccccccaaaacccccccccccccccccccccccaaaaaaccccccccccccaaaaaaaaaaaccaaaaacccaaaaaacccccccccaaacccccccccccccccaaaaaaaacaaaaccccccccccccccccacccccccccccccaaaa
 abcccccccccaaaaaacccccccccaaaaccccaacccccccccccccccccaaaaaaccccccccccaaaaaaaaaaaaaacaaaaaaccaacaaaccaacccaaaaaaccccccccccccccaaaaaaaacaaaccccccccccaccccaaaccccccccccccaaaaa
@@ -53,7 +53,6 @@ struct PathState {
     position: Position,
     steps: isize,
     height: Height,
-    prev: Vec<Position>,
 }
 
 const START: Height = b'S';
@@ -117,20 +116,16 @@ fn try_direction(
         .flatten()
         .unwrap();
 
-    if (next_height == DESTINATION && path_state.height != HIGHEST_HEIGHT)
+    if (next_height == DESTINATION && path_state.height + 1 != HIGHEST_HEIGHT)
         || (path_state.height + 1 < next_height)
     {
         return None;
     }
 
-    let mut prev = path_state.prev.clone();
-    prev.push((next_x as usize, next_y as usize));
-
     Some(PathState {
         position: (next_x as usize, next_y as usize),
         steps: path_state.steps + direction.0.abs() + direction.1.abs(),
         height: next_height,
-        prev,
     })
 }
 
@@ -143,7 +138,6 @@ fn main() {
         position: starting_position,
         steps: 0,
         height: LOWEST_HEIGHT,
-        prev: vec![starting_position],
     }]);
 
     let mut visited = BTreeSet::from([starting_position]);
